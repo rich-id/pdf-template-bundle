@@ -17,7 +17,11 @@ trait PdfProtectionTrait
         for ($i = 1; $i <= $pageCount; $i++) {
             $tplidx = $encoder->importPage($i);
             $specs = $encoder->getTemplateSize($tplidx);
-            $encoder->addPage($specs['orientation'], [$specs['width'], $specs['height']]);
+
+            if (\is_array($specs)) {
+                $encoder->addPage($specs['orientation'], [$specs['width'], $specs['height']]);
+            }
+
             $encoder->useTemplate($tplidx);
         }
 

@@ -7,6 +7,7 @@ namespace RichId\PdfTemplateBundle\Domain\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use RichId\PdfTemplateBundle\Infrastructure\Repository\PdfTemplateConfigurationRepository;
 
+/** @phpstan-ignore-next-line */
 #[ORM\Entity(repositoryClass: PdfTemplateConfigurationRepository::class)]
 #[ORM\Table(name: 'module_pdf_template_configuration')]
 class PdfTemplateConfiguration

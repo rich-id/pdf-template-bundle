@@ -43,7 +43,7 @@ abstract class AbstractPdf
     public ConfigurationInterface $configuration;
 
     #[Required]
-    public FilesystemMap $filesystemMap;
+    public FilesystemMap $filesystemMap;  /* @phpstan-ignore-line */
 
     abstract public function getPdfSlug(): string;
 
@@ -55,6 +55,7 @@ abstract class AbstractPdf
     {
     }
 
+    /** @return array<string, mixed> */
     protected function getPdfOptions(): array
     {
         return ['printBackground' => true];
@@ -114,13 +115,13 @@ abstract class AbstractPdf
 
         $fs = $seveableModel !== null ? $this->filesystemMap->get($seveableModel->getFilesystemName()) : null;
 
-        if ($fs !== null && $fs->has($seveableModel->getFileName()) && !$seveableModel->canForceNewGeneration()) {
+        if ($seveableModel !== null && $fs !== null && $fs->has($seveableModel->getFileName()) && !$seveableModel->canForceNewGeneration()) {
             return $fs->get($seveableModel->getFileName())->getContent();
         }
 
         $pdf = $this->generatePdf();
 
-        if ($fs !== null && $seveableModel->canSave()) {
+        if ($seveableModel !== null && $fs !== null && $seveableModel->canSave()) {
             $fs->createFile($seveableModel->getFileName())->setContent($pdf);
         }
 

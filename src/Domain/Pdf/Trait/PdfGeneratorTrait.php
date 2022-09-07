@@ -14,6 +14,7 @@ trait PdfGeneratorTrait
     #[Required]
     public ConfigurationInterface $configuration;
 
+    /** @return array<string, mixed> */
     abstract protected function getPdfOptions(): array;
     abstract protected function updatePage(Page $page): void;
 
