@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RichId\PdfTemplateBundle\Domain\Internal;
 
-use RichId\PdfTemplateBundle\Domain\Pdf\AbstractPdf;
 use RichId\PdfTemplateBundle\Domain\Fetcher\PdfTemplateFetcher;
+use RichId\PdfTemplateBundle\Domain\Pdf\AbstractPdf;
 use Symfony\Contracts\Service\Attribute\Required;
 
 final class InternalPdfManager

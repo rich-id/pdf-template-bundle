@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace RichId\PdfTemplateBundle\Domain\Pdf;
 
+use HeadlessChromium\Page;
 use Knp\Bundle\GaufretteBundle\FilesystemMap;
 use RichId\PdfTemplateBundle\Domain\Constant;
 use RichId\PdfTemplateBundle\Domain\Exception\MissingFilesystemException;
+use RichId\PdfTemplateBundle\Domain\Fetcher\PdfTemplateFetcher;
 use RichId\PdfTemplateBundle\Domain\Model\SaveablePdfModel;
 use RichId\PdfTemplateBundle\Domain\Pdf\Trait\PdfDataTrait;
-use RichId\PdfTemplateBundle\Domain\Fetcher\PdfTemplateFetcher;
 use RichId\PdfTemplateBundle\Domain\Pdf\Trait\PdfGeneratorTrait;
 use RichId\PdfTemplateBundle\Domain\Pdf\Trait\PdfProtectionTrait;
 use RichId\PdfTemplateBundle\Domain\Port\ConfigurationInterface;
@@ -48,6 +49,15 @@ abstract class AbstractPdf
 
     protected function assertValidParameters(): void
     {
+    }
+
+    protected function updatePage(Page $page): void
+    {
+    }
+
+    protected function getPdfOptions(): array
+    {
+        return ['printBackground' => true];
     }
 
     protected function getSaveableModel(): ?SaveablePdfModel

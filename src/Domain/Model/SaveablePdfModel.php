@@ -6,10 +6,10 @@ namespace RichId\PdfTemplateBundle\Domain\Model;
 
 final class SaveablePdfModel
 {
-    protected string $filesystemName;
-    protected string $fileName;
-    protected bool $canSave;
-    protected bool $canForceNewGeneration;
+    private string $filesystemName;
+    private string $fileName;
+    private bool $canSave;
+    private bool $canForceNewGeneration;
 
     public function getFilesystemName(): string
     {

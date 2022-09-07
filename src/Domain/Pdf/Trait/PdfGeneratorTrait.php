@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RichId\PdfTemplateBundle\Domain\Pdf\Trait;
 
 use HeadlessChromium\BrowserFactory;
+use HeadlessChromium\Page;
 use RichId\PdfTemplateBundle\Domain\Port\ConfigurationInterface;
 use Symfony\Contracts\Service\Attribute\Required;
 
@@ -12,6 +13,9 @@ trait PdfGeneratorTrait
 {
     #[Required]
     public ConfigurationInterface $configuration;
+
+    abstract protected function getPdfOptions(): array;
+    abstract protected function updatePage(Page $page): void;
 
     private function internalGeneratePdf(string $content): string
     {
@@ -21,8 +25,8 @@ trait PdfGeneratorTrait
         try {
             $page = $browser->createPage();
             $page->setHtml($content);
-            $page->waitUntilContainsElement('#pdf-fonts-loaded'); // todo not here
-            $pdf = \base64_decode($page->pdf(['printBackground' => true, 'landscape' => true, 'preferCSSPageSize' => true])->getBase64()); // todo options not here
+            $this->updatePage($page);
+            $pdf = \base64_decode($page->pdf($this->getPdfOptions())->getBase64());
 
             $browser->close();
 
