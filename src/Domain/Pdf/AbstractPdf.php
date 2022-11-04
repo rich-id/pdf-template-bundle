@@ -8,10 +8,14 @@ use HeadlessChromium\Page;
 use Knp\Bundle\GaufretteBundle\FilesystemMap;
 use RichId\PdfTemplateBundle\Domain\Constant;
 use RichId\PdfTemplateBundle\Domain\Exception\MissingFilesystemException;
+use RichId\PdfTemplateBundle\Domain\Exception\PdfNotFoundException;
+use RichId\PdfTemplateBundle\Domain\Exception\PdfSkippedException;
 use RichId\PdfTemplateBundle\Domain\Fetcher\PdfTemplateFetcher;
+use RichId\PdfTemplateBundle\Domain\Internal\InternalPdfManager;
 use RichId\PdfTemplateBundle\Domain\Model\SaveablePdfModel;
 use RichId\PdfTemplateBundle\Domain\Pdf\Trait\PdfDataTrait;
 use RichId\PdfTemplateBundle\Domain\Pdf\Trait\PdfGeneratorTrait;
+use RichId\PdfTemplateBundle\Domain\Pdf\Trait\PdfMergerTrait;
 use RichId\PdfTemplateBundle\Domain\Pdf\Trait\PdfProtectionTrait;
 use RichId\PdfTemplateBundle\Domain\Port\ConfigurationInterface;
 use RichId\PdfTemplateBundle\Domain\Port\TemplatingInterface;
@@ -22,6 +26,7 @@ abstract class AbstractPdf
 {
     use PdfDataTrait;
     use PdfGeneratorTrait;
+    use PdfMergerTrait;
     use PdfProtectionTrait;
 
     public const TEMPLATES = [Constant::DEFAULT_TEMPLATE];
@@ -29,6 +34,7 @@ abstract class AbstractPdf
     protected const TRANSLATION_DOMAIN = 'pdf';
     protected const TEMPLATING_FOLDER = 'pdf';
     protected const MODIFICATION_ALLOWED = true;
+    protected const OTHER_PAGES = [];
 
     #[Required]
     public TemplatingInterface $templating;
@@ -41,6 +47,9 @@ abstract class AbstractPdf
 
     #[Required]
     public ConfigurationInterface $configuration;
+
+    #[Required]
+    public InternalPdfManager $internalPdfanager;
 
     #[Required]
     public FilesystemMap $filesystemMap;  /* @phpstan-ignore-line */
@@ -92,15 +101,61 @@ abstract class AbstractPdf
         return [];
     }
 
+    /** @return array<string, callable> */
+    protected function otherPagesDatas(): array
+    {
+        return [];
+    }
+
+    protected function skippedIf(): bool
+    {
+        return false;
+    }
+
     final protected function generatePdf(): string
     {
         $pdf = $this->internalGeneratePdf($this->getContent());
+        $othersPages = $this->generateOtherPages();
+
+        if (!empty($othersPages)) {
+            $pdf = $this->mergePdfs(\array_merge([$pdf], $othersPages));
+        }
 
         if (static::MODIFICATION_ALLOWED) {
             return $pdf;
         }
 
         return $this->internalProtectPdf($pdf);
+    }
+
+    final protected function generateOtherPages(): array
+    {
+        $othersPages = [];
+
+        foreach (static::OTHER_PAGES as $otherPageSlug) {
+            $pageService = $this->internalPdfanager->getCurrentPdfService($otherPageSlug);
+
+            if ($pageService === null) {
+                throw new PdfNotFoundException($otherPageSlug);
+            }
+
+            $data = $this->data;
+            $customDataFn = $this->otherPagesDatas()[$otherPageSlug] ?? null;
+
+            if (\is_callable($customDataFn)) {
+                $data = $customDataFn();
+            }
+            $pageService->setData($data);
+            $pageService->assertValidParameters();
+
+            if ($pageService->skippedIf()) {
+                continue;
+            }
+
+            $othersPages[] = $pageService->generatePdf();
+        }
+
+        return $othersPages;
     }
 
     final protected function getPdf(): string
@@ -117,6 +172,10 @@ abstract class AbstractPdf
 
         if ($seveableModel !== null && $fs !== null && $fs->has($seveableModel->getFileName()) && !$seveableModel->canForceNewGeneration()) {
             return $fs->get($seveableModel->getFileName())->getContent();
+        }
+
+        if ($this->skippedIf()) {
+            throw new PdfSkippedException();
         }
 
         $pdf = $this->generatePdf();
