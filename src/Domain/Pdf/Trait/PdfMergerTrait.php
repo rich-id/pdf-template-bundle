@@ -9,6 +9,7 @@ use setasign\Fpdi\PdfParser\StreamReader;
 
 trait PdfMergerTrait
 {
+    /** @param string[] $pdfs */
     private function mergePdfs(array $pdfs): string
     {
         $encoder = new Fpdi();

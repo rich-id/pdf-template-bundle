@@ -128,6 +128,7 @@ abstract class AbstractPdf
         return $this->internalProtectPdf($pdf);
     }
 
+    /** @return string[] */
     final protected function generateOtherPages(): array
     {
         $othersPages = [];
