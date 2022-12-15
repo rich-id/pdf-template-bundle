@@ -18,14 +18,14 @@ trait PdfGeneratorTrait
     abstract protected function getPdfOptions(): array;
     abstract protected function updatePage(Page $page): void;
 
-    private function internalGeneratePdf(string $content): string
+    private function internalGeneratePdf(string $content, int $timeout = 10000): string
     {
         $browserFactory = new BrowserFactory($this->configuration->getChromeBinary());
         $browser = $browserFactory->createBrowser(['customFlags' => $this->configuration->getChromeCustomFlags()]);
 
         try {
             $page = $browser->createPage();
-            $page->setHtml($content);
+            $page->setHtml($content, $timeout);
             $this->updatePage($page);
             $pdf = \base64_decode($page->pdf($this->getPdfOptions())->getBase64());
 

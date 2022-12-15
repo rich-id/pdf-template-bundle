@@ -35,6 +35,7 @@ abstract class AbstractPdf
     protected const TEMPLATING_FOLDER = 'pdf';
     protected const MODIFICATION_ALLOWED = true;
     protected const OTHER_PAGES = [];
+    protected const MAX_TIMEOUT = 10000;
 
     #[Required]
     public TemplatingInterface $templating;
@@ -114,7 +115,7 @@ abstract class AbstractPdf
 
     final protected function generatePdf(): string
     {
-        $pdf = $this->internalGeneratePdf($this->getContent());
+        $pdf = $this->internalGeneratePdf($this->getContent(), static::MAX_TIMEOUT);
         $othersPages = $this->generateOtherPages();
 
         if (!empty($othersPages)) {
