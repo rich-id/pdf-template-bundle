@@ -6,6 +6,6 @@ namespace RichId\PdfTemplateBundle\Domain\Port;
 
 interface TemplatingInterface
 {
-    /** @param array<string, string> $context */
+    /** @param array<string, mixed> $context */
     public function render(string $name, array $context = []): string;
 }

@@ -13,7 +13,7 @@ class TemplatingAdapter implements TemplatingInterface
     #[Required]
     public Environment $twig;
 
-    /** @param array<string, string> $context */
+    /** @param array<string, mixed> $context */
     public function render(string $name, array $context = []): string
     {
         return $this->twig->render($name, $context);
