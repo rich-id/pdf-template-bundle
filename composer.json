@@ -21,9 +21,9 @@
         "doctrine/migrations": "^3.0",
         "doctrine/orm": "^2.7",
         "knplabs/knp-gaufrette-bundle": "^0.7.2",
+        "mikehaertl/php-pdftk": "^0.13.1",
         "richcongress/bundle-toolbox": "^1.1",
         "sensio/framework-extra-bundle": "^5.4|^6.0",
-        "setasign/fpdi-protection": "^2.0",
         "symfony/translation": "^5.4",
         "symfony/twig-bundle": "^5.4"
     },

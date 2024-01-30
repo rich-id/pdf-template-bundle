@@ -4,31 +4,30 @@ declare(strict_types=1);
 
 namespace RichId\PdfTemplateBundle\Domain\Pdf\Trait;
 
-use setasign\Fpdi\Fpdi;
-use setasign\Fpdi\PdfParser\StreamReader;
+use mikehaertl\pdftk\Pdf;
 
 trait PdfMergerTrait
 {
-    /** @param string[] $pdfs */
-    private function mergePdfs(array $pdfs): string
+    use PdfTempFileTrait;
+
+    /** @param string[] $sources */
+    private function mergePdfs(array $sources): string
     {
-        $encoder = new Fpdi();
+        return $this->withTempDir(function (string $tempDir) use ($sources) {
+            $pdf = new Pdf();
+            $pdf->ignoreWarnings = true;
 
-        foreach ($pdfs as $pdf) {
-            $pageCount = $encoder->setSourceFile(StreamReader::createByString($pdf));
-
-            for ($i = 1; $i <= $pageCount; $i++) {
-                $tplidx = $encoder->importPage($i);
-                $specs = $encoder->getTemplateSize($tplidx);
-
-                if (\is_array($specs)) {
-                    $encoder->addPage($specs['orientation'], [$specs['width'], $specs['height']]);
-                }
-
-                $encoder->useTemplate($tplidx);
+            foreach ($sources as $index => $source) {
+                $pdf->addFile($this->copySource($source, $tempDir, $index + 1));
             }
-        }
 
-        return $encoder->Output('S');
+            $result = $pdf->toString();
+
+            if (\is_bool($result)) {
+                throw new \Exception('Failed to generate pdf file');
+            }
+
+            return $result;
+        });
     }
 }
