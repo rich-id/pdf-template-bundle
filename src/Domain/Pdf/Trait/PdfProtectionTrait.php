@@ -4,28 +4,43 @@ declare(strict_types=1);
 
 namespace RichId\PdfTemplateBundle\Domain\Pdf\Trait;
 
-use setasign\Fpdi\PdfParser\StreamReader;
-use setasign\FpdiProtection\FpdiProtection;
+use mikehaertl\pdftk\Pdf;
 
 trait PdfProtectionTrait
 {
-    private function internalProtectPdf(string $pdf): string
+    use PdfTempFileTrait;
+
+    private function internalProtectPdf(string $source): string
     {
-        $encoder = new FpdiProtection();
-        $pageCount = $encoder->setSourceFile(StreamReader::createByString($pdf));
+        return $this->withTempDir(function (string $tempDir) use ($source) {
+            $pdf = new Pdf();
+            $pdf->ignoreWarnings = true;
 
-        for ($i = 1; $i <= $pageCount; $i++) {
-            $tplidx = $encoder->importPage($i);
-            $specs = $encoder->getTemplateSize($tplidx);
+            $pdf->addFile($this->copySource($source, $tempDir, 0));
 
-            if (\is_array($specs)) {
-                $encoder->addPage($specs['orientation'], [$specs['width'], $specs['height']]);
+            $pdf->setPassword(self::randomPassword());
+            $pdf->allow('Printing DegradedPrinting');
+
+            $result = $pdf->toString();
+
+            if (\is_bool($result)) {
+                throw new \Exception('Failed to generate pdf file');
             }
 
-            $encoder->useTemplate($tplidx);
+            return $result;
+        });
+    }
+
+    private static function randomPassword(int $length = 32): string
+    {
+        $string = '';
+
+        while (($len = strlen($string)) < $length) {
+            $size = $length - $len;
+            $bytes = random_bytes($size);
+            $string .= substr(str_replace(['/', '+', '='], '', base64_encode($bytes)), 0, $size);
         }
 
-        $encoder->setProtection([FpdiProtection::PERM_PRINT, FpdiProtection::PERM_DIGITAL_PRINT]);
-        return $encoder->Output('S');
+        return $string;
     }
 }
