@@ -12,6 +12,7 @@ use RichId\PdfTemplateBundle\Domain\Exception\PdfNotFoundException;
 use RichId\PdfTemplateBundle\Domain\Exception\PdfSkippedException;
 use RichId\PdfTemplateBundle\Domain\Fetcher\PdfTemplateFetcher;
 use RichId\PdfTemplateBundle\Domain\Internal\InternalPdfManager;
+use RichId\PdfTemplateBundle\Domain\Model\PdfForcedTemplateSlugModelInterface;
 use RichId\PdfTemplateBundle\Domain\Model\SaveablePdfModel;
 use RichId\PdfTemplateBundle\Domain\Pdf\Trait\PdfDataTrait;
 use RichId\PdfTemplateBundle\Domain\Pdf\Trait\PdfGeneratorTrait;
@@ -196,6 +197,10 @@ abstract class AbstractPdf
 
     final protected function getTemplateSlug(): string
     {
+        if ($this->data instanceof PdfForcedTemplateSlugModelInterface && $this->data->getForcedTemplateSlug() !== null) {
+            $this->data->getForcedTemplateSlug();
+        }
+
         return ($this->pdfTemplateFetcher)($this->getPdfSlug());
     }
 }

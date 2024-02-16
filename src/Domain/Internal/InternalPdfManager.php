@@ -16,10 +16,10 @@ final class InternalPdfManager
     #[Required]
     public PdfTemplateFetcher $pdfTemplateFetcher;
 
-    public function getCurrentPdfService(string $slug): ?AbstractPdf
+    public function getCurrentPdfService(string $slug, ?string $forcedTemplateSlug = null): ?AbstractPdf
     {
         $services = $this->getAllPdfServicesFor($slug);
-        $template = ($this->pdfTemplateFetcher)($slug);
+        $template = $forcedTemplateSlug ?? ($this->pdfTemplateFetcher)($slug);
 
         foreach ($services as $service) {
             if ($service->supportTemplate($template)) {
