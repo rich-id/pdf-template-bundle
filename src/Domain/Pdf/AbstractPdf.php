@@ -198,7 +198,7 @@ abstract class AbstractPdf
     final protected function getTemplateSlug(): string
     {
         if ($this->data instanceof PdfForcedTemplateSlugModelInterface && $this->data->getForcedTemplateSlug() !== null) {
-            $this->data->getForcedTemplateSlug();
+            return $this->data->getForcedTemplateSlug();
         }
 
         return ($this->pdfTemplateFetcher)($this->getPdfSlug());
