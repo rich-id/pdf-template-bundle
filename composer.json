@@ -24,15 +24,15 @@
         "doctrine/orm": "^2.7 || ^3.0",
         "knplabs/knp-gaufrette-bundle": "^0.9.0",
         "mikehaertl/php-pdftk": "^0.13.1",
-        "richcongress/bundle-toolbox": "v2.x-dev",
-        "symfony/translation": "^5.4 || ^6.0 || ^7.0",
-        "symfony/twig-bundle": "^5.4 || ^6.0 || ^7.0"
+        "richcongress/bundle-toolbox": "^2.0",
+        "symfony/translation": "^6.0 || ^7.0",
+        "symfony/twig-bundle": "^6.0 || ^7.0"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "^2.0",
         "phpunit/phpunit": "^9.5",
-        "richcongress/static-analysis": "^0.1",
-        "richcongress/test-suite": "v0.2.x-dev",
+        "richcongress/static-analysis": "^0.2",
+        "richcongress/test-suite": "^0.2",
         "roave/security-advisories": "dev-latest"
     },
     "autoload": {
