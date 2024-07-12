@@ -36,7 +36,7 @@ abstract class AbstractPdf
     protected const TEMPLATING_FOLDER = 'pdf';
     protected const MODIFICATION_ALLOWED = true;
     protected const OTHER_PAGES = [];
-    protected const MAX_TIMEOUT = 10000;
+    protected const MAX_TIMEOUT = 20000;
 
     #[Required]
     public TemplatingInterface $templating;

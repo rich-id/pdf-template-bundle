@@ -27,7 +27,7 @@ trait PdfGeneratorTrait
             $page = $browser->createPage();
             $page->setHtml($content, $timeout);
             $this->updatePage($page);
-            $pdf = \base64_decode($page->pdf($this->getPdfOptions())->getBase64());
+            $pdf = \base64_decode($page->pdf($this->getPdfOptions())->getBase64($timeout));
 
             $browser->close();
 
