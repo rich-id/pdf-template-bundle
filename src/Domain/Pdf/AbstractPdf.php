@@ -114,6 +114,11 @@ abstract class AbstractPdf
         return false;
     }
 
+    protected function isModificationAllowed(): bool
+    {
+        return static::MODIFICATION_ALLOWED;
+    }
+
     final protected function generatePdf(): string
     {
         $pdf = $this->internalGeneratePdf($this->getContent(), static::MAX_TIMEOUT);
@@ -123,7 +128,7 @@ abstract class AbstractPdf
             $pdf = $this->mergePdfs(\array_merge([$pdf], $othersPages));
         }
 
-        if (static::MODIFICATION_ALLOWED) {
+        if ($this->isModificationAllowed()) {
             return $pdf;
         }
 
