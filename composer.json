@@ -23,7 +23,7 @@
         "doctrine/migrations": "^3.0",
         "doctrine/orm": "^2.7 || ^3.0",
         "knplabs/knp-gaufrette-bundle": "^0.9.0",
-        "mikehaertl/php-pdftk": "^0.13.1",
+        "mikehaertl/php-pdftk": "^0.13.1 || ^0.14.0",
         "richcongress/bundle-toolbox": "^2.0",
         "symfony/translation": "^6.0 || ^7.0",
         "symfony/twig-bundle": "^6.0 || ^7.0"
