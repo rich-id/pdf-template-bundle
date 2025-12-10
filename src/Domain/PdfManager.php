@@ -28,11 +28,7 @@ final class PdfManager
         }
 
         $method = new \ReflectionMethod($service, 'getPdf');
-        $method->setAccessible(true);
 
-        $pdf = $method->invoke($service->setData($data));
-        $method->setAccessible(false);
-
-        return $pdf;
+        return $method->invoke($service->setData($data));
     }
 }
